@@ -18,7 +18,7 @@
     The file will contain an HTML table with the Id, Name & SwitchRole URL of each AWS Account within the Organization
 
 .EXAMPLE
-    PS C:\> Get-AwsSwitchRoleUrlList -IAMRole ExampleRoleNameToUse -OutputHtmlFile -OpenFileInBrowser
+    PS C:\> Get-AwsSwitchRoleUrlList -IAMRole ExampleRoleNameToUse -OpenFileInBrowser
     Same as previous example but the file will automatically open in default browser
 
 .NOTES
