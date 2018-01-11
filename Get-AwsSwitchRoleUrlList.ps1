@@ -16,6 +16,11 @@
     PS C:\> Get-AwsSwitchRoleUrlList -IAMRole ExampleRoleNameToUse -OutputHtmlFile
     A file named SwitchRoleUrlList.html will be created in the current working directory
     The file will contain an HTML table with the Id, Name & SwitchRole URL of each AWS Account within the Organization
+
+.EXAMPLE
+    PS C:\> Get-AwsSwitchRoleUrlList -IAMRole ExampleRoleNameToUse -OutputHtmlFile -OpenFileInBrowser
+    Same as previous example but the file will automatically open in default browser
+
 .NOTES
     Author: Robert D. Biddle
     Created: Jan.10.2018
@@ -39,7 +44,11 @@ param (
 
     [Parameter(ParameterSetName = 'OutputHTML')]
     [Switch]
-    $OutputHtmlFile
+    $OutputHtmlFile,
+
+    [Parameter(ParameterSetName = 'OutputHTML')]
+    [Switch]
+    $OpenFileInBrowser
 )
 $UrlPart1 = "https://signin.aws.amazon.com/switchrole?account="
 $UrlPart2 = "&roleName=$IAMRole&displayName="
@@ -54,7 +63,7 @@ foreach ($account in $AccountList) {
     $obj | Add-Member -NotePropertyName 'HyperLink' -NotePropertyValue "<a href=`"$SwitchRoleUrl`">$SwitchRoleUrl</a>"
     $SwitchRoleUrlList += $obj
 }
-if ($OutputHtmlFile) {
+if ($OutputHtmlFile -or $OpenFileInBrowser) {
     $OutputFile = New-Item -ItemType File -Path ".\" -Name "SwitchRoleUrlList.html" -Force
 
     $Content = @'
@@ -96,7 +105,13 @@ if ($OutputHtmlFile) {
     }
     $Content += '</tbody></div></body></html>'
     $Content | Out-File -FilePath $OutputFile.FullName -Encoding default -Force
-    Get-Item $OutputFile.FullName
+    
+    if ($OpenFileInBrowser) {
+        Start-Process $OutputFile.FullName
+    }
+    Else {
+        Get-Item $OutputFile.FullName
+    }
 }
 Else {
     $SwitchRoleUrlList | Select-Object Id, Name, URL
